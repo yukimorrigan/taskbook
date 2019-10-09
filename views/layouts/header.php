@@ -11,18 +11,15 @@
 </head>
 <body class="d-flex flex-column">
 	<nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
-		<div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-			<ul class="navbar-nav">
-				<li class="nav-item">
-					<a class="nav-link active" href="/">Список задач</a>
-				</li>
-			</ul>
-		</div>
-		<div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-	        <ul class="navbar-nav ml-auto">
-	            <li class="nav-item">
-	                <a class="nav-link" href="#"><i class="fas fa-door-open"></i></a>
-	            </li>
-	        </ul>
-	    </div>
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<a class="nav-link active" href="/">Список задач <i class="fas fa-list"></i></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="#">Добавить задачу <i class="fas fa-plus"></i></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="#">Вход для админа <i class="fas fa-sign-in-alt"></i></a>
+			</li>
+		</ul>
 	</nav>
