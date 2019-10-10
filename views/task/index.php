@@ -35,6 +35,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
+                            <h6 id="user" class="pb-3"></h6>
                             <div class="row">
                                 <div class="col-4">
                                     <img src="/upload/images/no-image.png" class="img-fluid" alt="Изображение к тексту задачи">

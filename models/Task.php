@@ -41,6 +41,18 @@ class Task
         return R::load('task', $id)->export();
     }
 
+    public static function createTask($name, $email, $description) {
+        $task = R::dispense('task');
+
+        $task->name = $name;
+        $task->email = $email;
+        $task->description = $description;
+
+        R::store($task);
+
+        return R::getInsertId();
+    }
+
     /**
      * Возвращает сокращенный текст задачи (первые 100 символов)
      * @param string $description <p>текст задачи</p>
