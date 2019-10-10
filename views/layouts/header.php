@@ -8,6 +8,9 @@
 	<link rel="stylesheet" type="text/css" href="/template/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/template/css/fontawesome.css">
 	<link rel="stylesheet" type="text/css" href="/template/css/style.css">
+	<script type="text/javascript" src="/template/js/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="/template/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/template/js/main.js"></script>
 </head>
 <body class="d-flex flex-column">
 	<nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">

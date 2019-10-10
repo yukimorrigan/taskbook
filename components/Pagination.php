@@ -12,7 +12,7 @@ class Pagination
      * @var Ссылок навигации на страницу
      * 
      */
-    private $max = 10;
+    private $max = 3;
 
     /**
      * 
@@ -85,7 +85,7 @@ class Pagination
         for ($page = $limits[0]; $page <= $limits[1]; $page++) {
             # Если текущая это текущая страница, ссылки нет и добавляется класс active
             if ($page == $this->current_page) {
-                $links .= '<li class="active"><a href="#">' . $page . '</a></li>';
+                $links .= '<li class="page-item active"><a class="page-link" href="#">' . $page . '</a></li>';
             } else {
                 # Иначе генерируем ссылку
                 $links .= $this->generateHtml($page);
@@ -97,12 +97,12 @@ class Pagination
             # Если текущая страница не первая
             if ($this->current_page > 1)
             # Создаём ссылку "На первую"
-                $links = $this->generateHtml(1, '&lt;') . $links;
+                $links = $this->generateHtml(1, '&laquo;') . $links;
 
             # Если текущая страница не первая
             if ($this->current_page < $this->amount)
             # Создаём ссылку "На последнюю"
-                $links .= $this->generateHtml($this->amount, '&gt;');
+                $links .= $this->generateHtml($this->amount, '&raquo;');
         }
 
         $html .= $links . '</ul>';
@@ -128,7 +128,7 @@ class Pagination
         $currentURI = preg_replace('~/page-[0-9]+~', '', $currentURI);
         # Формируем HTML код ссылки и возвращаем
         return
-                '<li><a href="' . $currentURI . $this->index . $page . '">' . $text . '</a></li>';
+                '<li class="page-item"><a class="page-link" href="' . $currentURI . $this->index . $page . '">' . $text . '</a></li>';
     }
 
     /**
@@ -139,7 +139,7 @@ class Pagination
     private function limits()
     {
         # Вычисляем ссылки слева (чтобы активная ссылка была посередине)
-        $left = $this->current_page - round($this->max / 2);
+        $left = $this->current_page - floor($this->max / 2);
 
         # Вычисляем начало отсчёта
         $start = $left > 0 ? $left : 1;
@@ -147,18 +147,17 @@ class Pagination
         # Если впереди есть как минимум $this->max страниц
         if ($start + $this->max <= $this->amount)
         # Назначаем конец цикла вперёд на $this->max страниц или просто на минимум
-            $end = $start > 1 ? $start + $this->max : $this->max;
+            $end = $start > 1 ? $start + $this->max - 1 : $this->max;
         else {
             # Конец - общее количество страниц
             $end = $this->amount;
 
             # Начало - минус $this->max от конца
-            $start = $this->amount - $this->max > 0 ? $this->amount - $this->max : 1;
+            $start = $this->amount - $this->max > 0 ? $this->amount - $this->max + 1 : 1;
         }
 
         # Возвращаем
-        return
-                array($start, $end);
+        return array($start, $end);
     }
 
     /**
