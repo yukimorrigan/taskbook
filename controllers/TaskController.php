@@ -57,6 +57,7 @@ class TaskController
                 $check = 0;
                 // Подключаем вид
                 require_once(ROOT . '/views/task/create.php');
+                // Возврат из метода
                 return true;
             }
             // Если пользователь заполнил все текстовые поля
@@ -64,7 +65,8 @@ class TaskController
             $id = Task::getAutoIncrement();
             // Получаем изображение из формы
             $fileName = $_FILES['image']['tmp_name'];
-            $check_format = 1;
+            // Флаг проверки формата изображения
+            $check_format = true;
             // Проверяем, загружалось ли изображение через форму 
             if (is_uploaded_file($fileName) && $check_format = Task::checkImageFormat($fileName)) {
                 // Если да
@@ -91,8 +93,10 @@ class TaskController
             } else {
                 // Данные не прошли проверку
                 if ($check_format) { 
+                    // Изображение не было загружено
                     $check = 0;
                 } else {
+                    // Неверный формат изображения
                     $check = -1;
                 }
             }
