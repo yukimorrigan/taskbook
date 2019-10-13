@@ -3,12 +3,15 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            <br>
+            <!-- Уведомления -->
             <div class="row">
             	<div class="col-lg-3"></div>
 	            <div class="col">
-			        <div class="alert alert-danger sr-only" role="alert">
+			        <div id="check-field" class="alert alert-danger sr-only" role="alert">
 						Заполните поля!
+					</div>
+					<div id="check-format" class="alert alert-danger sr-only" role="alert">
+						Неверный формат файла. Допустимые форматы: JPG, GIF, PNG
 					</div>
 					<p id="check" class="sr-only"><?php echo $check; ?></p>
 					<?php if ($check == 1): ?>
@@ -19,7 +22,9 @@
 				</div>
 				<div class="col-lg-3"></div>
 			</div>
-            <form action="#" method="post" enctype="multipart/form-data">
+			<!-- Форма -->
+            <form id="create-task" action="#" method="post" enctype="multipart/form-data">
+            	<!-- Имя -->
                 <div class="form-group row">
                     <div class="col-lg-3"></div>
                     <label class="col-lg-1 col-form-label">Ваше имя*</label>
@@ -28,6 +33,7 @@
                     </div>
                     <div class="col-lg-3"></div>
                 </div>
+                <!-- Email -->
                 <div class="form-group row">
                     <div class="col-lg-3"></div>
                     <label class="col-lg-1 col-form-label">Ваш e-mail*</label>
@@ -36,6 +42,7 @@
                     </div>
                     <div class="col-lg-3"></div>
                 </div>
+                <!-- Текст задачи -->
                 <div class="form-group row">
                     <div class="col-lg-3"></div>
                     <label class="col-lg-1 col-form-label">Текст задачи*</label>
@@ -44,6 +51,7 @@
                     </div>
                     <div class="col-lg-3"></div>
                 </div>
+                <!-- Картинка -->
                 <div class="form-group row">
                     <div class="col-lg-3"></div>
                     <label class="col-lg-1 col-form-label">Картинка*</label>
@@ -55,6 +63,7 @@
                     </div>
                     <div class="col-lg-3"></div>
                 </div>
+                <!-- Предварительный просмотр -->
                 <div class="row">
                     <div class="col text-center">
                         <a id="preview-click" class="btn btn-light">
@@ -72,7 +81,7 @@
                                         <h5 class="modal-title">Текст задачи</h5>
                                     </div>
                                     <div class="modal-body">
-                                        <h6 id="preview-user" class="pb-3"></h6>
+                                        <h6 id="preview-user" class="pb-3"><span id="preview-name"></span>, <span id="preview-email"></span></h6>
                                         <div class="row">
                                             <div class="col">
                                                 <img src="/upload/images/no-image.png" class="preview-img" alt="Изображение к тексту задачи">
@@ -88,6 +97,7 @@
                     </div>
                     <div class="col-lg-3"></div>
                 </div>
+                <!-- Отправить форму -->
                 <div class="form-group row">
                     <div class="col-lg-3"></div>
                     <div class="col">
