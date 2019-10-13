@@ -43,7 +43,6 @@ class TaskController
         $name = '';
         $email = '';
         $description = '';
-        // Обработка формы
         // Если форма отправлена
         if (isset($_POST['submit'])) {
             // Флаг ошибок
@@ -61,8 +60,7 @@ class TaskController
             // Если E-mail не валидный
             if (!Task::checkEmail($email)) {
                 $errors[] = 'Неверный email';
-            }
-            
+            }          
             // Получаем id, который будет иметь запись, после вставки в БД
             $id = Task::getAutoIncrement();
             // Получаем изображение из формы
@@ -75,23 +73,23 @@ class TaskController
                 if ($errors == false) {
                     // Добавляем новую задачу в БД
                     Task::createTask($name, $email, $description);
-                        // Сохраняем изображение
-                        // Максимально допустимая ширина изображения
+                    // Сохраняем изображение
+                    // Максимально допустимая ширина изображения
                     $max_width = 320;
-                        // Максимально допустимая высота изображения
+                    // Максимально допустимая высота изображения
                     $max_height = 240;
-                        // Ширина и высота загруженного изображения
+                    // Ширина и высота загруженного изображения
                     list($width, $height) = getimagesize($fileName);
-                        // Если изображение привышает максимальные размеры
+                    // Если изображение привышает максимальные размеры
                     if ($width > $max_width || $height > $max_height) {
-                            // Пропорционально уменьшаем изображение
+                        // Пропорционально уменьшаем изображение
                         Task::changeImageSize($fileName, $max_width, $max_height, $width, $height);
                     }
-                        // Формат загруженного изображения
+                    // Формат загруженного изображения
                     $format = preg_split('/\./', $_FILES["image"]["name"])[1];
-                        // Сохраняем изображение
+                    // Сохраняем изображение
                     move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "/upload/images/{$id}." . $format);
-                        // Запись удачно добавлена
+                    // Запись удачно добавлена
                     $result = true;
                 }
             } else {
