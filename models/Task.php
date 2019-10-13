@@ -6,7 +6,7 @@
 class Task 
 {
     // Количество отображаемых задач по умолчанию
-    const SHOW_BY_DEFAULT = 10;
+    const SHOW_BY_DEFAULT = 8;
 
     /**
      * Возвращает список задач
@@ -24,7 +24,7 @@ class Task
     }
 
     /**
-     * Возвращаем количество задач
+     * Возвращает количество задач
      * @return integer
      */
     public static function getTotalTasks() {
@@ -41,16 +41,33 @@ class Task
         return R::load('task', $id)->export();
     }
 
+    /**
+     * Добавляет новую задачу
+     * @param string $name <p>Название</p>
+     * @param string $email <p>E-main</p>
+     * @param string $description <p>Текст задачи</p>
+     * @return boolean <p>Результат добавления записи в таблицу</p>
+     */
     public static function createTask($name, $email, $description) {
+        // Сосздаем объект task
         $task = R::dispense('task');
-
+        // Заполняем его поля
         $task->name = $name;
         $task->email = $email;
         $task->description = $description;
+        $task->status = 0;
+        // Сохраняем в таблице
+        $id = R::store($task);
+        // Вернуть результат операции
+        return $id;
+    }
 
-        R::store($task);
-
-        return R::getInsertId();
+    /**
+     * Возвращает аттрибут таблицы Auto_increment
+     * @return integer
+     */
+    public static function getAutoIncrement() {
+        return R::getRow("SHOW TABLE STATUS FROM `taskbook` WHERE `name` LIKE 'task'")['Auto_increment'];
     }
 
     /**
@@ -75,11 +92,11 @@ class Task
     public static function getStatus($status) {
         switch ($status) {
             case '0':
-            return 'Не выполнена';
-            break;
+                return 'Не выполнена';
+                break;
             case '1':
-            return 'Выполнена';
-            break;
+                return 'Выполнена';
+                break;
         }
     }
 
@@ -95,6 +112,7 @@ class Task
         $path = '/upload/images/';
         // Форматы
         $formats = ['.png', '.jpg', 'gif'];
+        // Проверяем формат
         foreach ($formats as $format) {
             // Путь к изображению
             $pathToProductImage = $path . $id . $format;
@@ -106,6 +124,69 @@ class Task
         }
         // Возвращаем путь изображения-пустышки
         return $path . $noImage;
+    }
+
+    /**
+     * Проверяет формат изображения
+     * @param string $fileName <p>Путь к файлу</p>
+     * @return boolean <p>Результат проверки</p>
+     */
+    public static function checkImageFormat($fileName) {
+        // Получить формат изображения
+        $imageType = exif_imageType($fileName);
+        // Если формат изображения JPG/GIF/PNG - вернуть значение истина
+        if ($imageType == IMAGETYPE_JPEG || $imageType == IMAGETYPE_GIF || $imageType == IMAGETYPE_PNG) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Изменяет размер изображения
+     * @param string $fileName <p>Путь к файлу</p>
+     * @param int $maxWidth <p>Ширина изображения после изменения</p>
+     * @param int $maxHeight <p>Высота изображения после изменения</p>
+     * @param int $altWidth <p>Ширина изображения до изменения</p>
+     * @param int $altHeight <p>Высота изображения до изменения</p>
+     */
+    public static function changeImageSize($fileName, $maxWidth, $maxHeight, $altWidth, $altHeight) {
+        // Получить формат изображения
+        $imageType = exif_imageType($fileName);
+        // Пропорциональное соотношение ширины и высоты изображения
+        $ratio = $altWidth / $altHeight;
+        // Задаем изображению новые ширину и высоту
+        if( $ratio >= 1) {
+            // Если ширина больше или равна высоте
+            $width = $maxWidth;
+            $height = $maxWidth / $ratio;
+        }
+        else {
+            // Если высота больше чем ширина
+            $width = $maxHeight * $ratio;
+            $height = $maxHeight;
+        }
+        // Ресурс исходного изображения
+        $src = imagecreatefromstring(file_get_contents($fileName));
+        // Ресурс целевого изображения
+        $dst = imagecreatetruecolor($width, $height);
+        // Изменить размеры изображения
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $width, $height, $altWidth, $altHeight);
+        // Сохранить изображение с нужным форматом   
+        switch ($imageType) {
+            case IMAGETYPE_JPEG:
+                imagejpeg($dst, $fileName);
+                break;
+            case IMAGETYPE_GIF:
+                imagegif($dst, $fileName);
+                break;
+            case IMAGETYPE_PNG:
+                imagepng($dst, $fileName);
+                break;
+        }
+        // Освободить память
+        imagedestroy($src);
+        imagedestroy($dst);
     }
 }
 
