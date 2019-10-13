@@ -37,80 +37,141 @@ $( document ).ready(function() {
         });
     });
 
-    $('#preview-click').click(function() {
-        fill = checkAddForm();
+    /* Отображение страницы 'Добавить задачу' */
+    // Ответ возвращаемый от сервера
+    switch ($('#check').text()) {
+        // Неверный формат изображения
+        case '-1':
+            // Показать блок "неверный формат"
+            $('#check-format').removeClass('sr-only');
+            // Обвести поле загрузки файла красным контуром
+            $('#form-image').addClass('is-invalid');
+            break;
+        // Невалидные текстовые данные
+        case '0':
+            // Что-то не так, проверяем валидность формы
+            checkCreateForm();
+            break;
+        // Все данные валидны
+        case '1':
+            // Убрать блок "неверный формат"
+            $('#check-format').addClass('sr-only');
+            // Убрать красную обводку у поля загрузки файла
+            $('#form-image').removeClass('is-invalid');
+            break;
+        default:
+            break;
+    }
 
-        if (!fill) {
+    // При нажатии на кнопку "предварительный просмотр"
+    $('#preview-click').click(function() {
+        // Проверить валидность заполненных данных
+        var valid = checkCreateForm();
+        if (!valid) {
+            // Если данные не валидны
+            // Скрыть форму
             $('#preview').addClass('sr-only');
         } else {
-            var user = $('#form-name').val();
-            var email = $('#form-email').val();
-            var description = $('#form-description').val();
-            $('#preview-user').html(user + ', ' + email);
-            $('#preview-description').html(description);
+            // Иначе
+            // Показать форму
             $('#preview').removeClass('sr-only');
         }
     });
 
-    if ($('#check').text() == '0') {
-        checkAddForm();
-    }
+    // При вводе текста в форму
+    $('#create-task input, #create-task textarea').keyup(function(){
+        // убрать красную обводку
+        $(this).removeClass('is-invalid');
+        // изменить текст в блоке предварительного просмотра
+        var formName = $(this).attr('id').split(/\-/)[1];
+        $('#preview-' + formName).html($(this).val());
+    });
 
-    function checkAddForm() {
-        var user = $('#form-name').val();
+    // Проверить валидность формы
+    function checkCreateForm() {
+        // Данные из формы
+        var name = $('#form-name').val();
         var email = $('#form-email').val();
         var description = $('#form-description').val();
         var image = $('#form-image').val();
-        var fill = true;
-
-        if (user == '') {
+        // Флаг валидности формы
+        var valid = true;
+        
+        // Проверяем, являются ли текстовые поля пустыми 
+        // Если да - обводим их красным контуром (форма не валидна),
+        // Иначе - убираем красный контур
+        if (name == '') {
             $('#form-name').addClass('is-invalid');
-            fill = false;
+            valid = false;
         } else {
             $('#form-name').removeClass('is-invalid');
         }
 
         if (email == '') {
             $('#form-email').addClass('is-invalid');
-            fill = false;
+            valid = false;
         } else {
             $('#form-email').removeClass('is-invalid');
         }
 
         if (description == '') {
             $('#form-description').addClass('is-invalid');
-            fill = false;
+            valid = false;
         } else {
             $('#form-description').removeClass('is-invalid');
         }
 
-        if (image == '') {
+        // Если файлы загружались через форму
+        if (document.getElementById('form-image').files[0] != null) {
+            // Получить имя файла
+            var fileName = document.getElementById('form-image').files[0].name;
+            // Проверить формат файла
+            var reg = /\.(png|gif|jpe?g)$/i;
+            // Проверить формат файла
+            if (reg.test(fileName)) {
+                // Если имя файла прошло проверку
+                // Скрыть блок "неверный формат"
+                $('#check-format').addClass('sr-only');
+                // Убрать красную обводку вокруг поля
+                $('#form-image').removeClass('is-invalid');
+            } else {
+                // Плказать блок "неверный формат"
+                $('#check-format').removeClass('sr-only');
+                // Добавить красную обводку вокруг поля
+                $('#form-image').addClass('is-invalid');
+                // Форма не валидна
+                valid = false;
+            }
+        } else {
+            // Добавить красную обводку вокруг поля
             $('#form-image').addClass('is-invalid');
-            fill = false;
-        } else {
-            $('#form-image').removeClass('is-invalid');
+            // Форма не валидна
+            valid = false;
         }
 
-        if (!fill) {
-            $('.alert-danger').removeClass('sr-only');
-            $('.alert-success').addClass('sr-only');
-        } else {
-            $('.alert-danger').addClass('sr-only');
+        // Если форма валидна
+        if (valid) {
+            // Скрыть сообщение об ошибке
+            $('#check-field').addClass('sr-only');
+            // Показать сообщение об успехе
             $('.alert-success').removeClass('sr-only');
+        } else {
+            $('#check-field').removeClass('sr-only');
+            $('.alert-success').addClass('sr-only');
         }
 
-        return fill;
+        // Вернуть успешность прохождения проверки валидации
+        return valid;
     }
 
     // Предосмотр картинки
     $('#form-image').change(function(){
         // Показать путь
-        fileName = 'Выберите файл';
+        var fileName = 'Выберите файл';
         if (document.getElementById('form-image').files[0] != null) {
             fileName = document.getElementById('form-image').files[0].name;
         }   
         $(this).next('.custom-file-label').addClass('selected').html(fileName);
-
         // Показать картинку
         readURL(this, '.preview-img');
     });
