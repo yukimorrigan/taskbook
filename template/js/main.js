@@ -37,44 +37,144 @@ $( document ).ready(function() {
         });
     });
 
-    /* Отображение страницы 'Добавить задачу' */
-    // Ответ возвращаемый от сервера
-    switch ($('#check').text()) {
-        // Неверный формат изображения
-        case '-1':
-            // Показать блок "неверный формат"
-            $('#check-format').removeClass('sr-only');
-            // Обвести поле загрузки файла красным контуром
+    /* Отображение страницы 'Добавить задачу' */    
+    // Если пришел ответ от сервера
+    // И результат выполнения операции не был успешен
+    if ($('#verification-messages').children().length > 0 && 
+        $('#verification-messages').children('.alert-success').length == 0) {
+        // Проверяем форму
+        checkCreateForm(false);
+    }
+
+    // Проверить валидность формы
+    function checkCreateForm(addMessages = true) {
+        // Данные из формы
+        var name = $('#form-name').val();
+        var email = $('#form-email').val();
+        var description = $('#form-description').val();
+        var image = $('#form-image').val();
+        // Флаг - наличие пустых полей
+        var empty = false;
+        // Флаг успешность проверки
+        var result = true;
+        
+        // Проверяем, являются ли текстовые поля пустыми 
+        // Если да - обводим их красным контуром,
+        // Иначе - убираем красный контур
+        if (name == '') {
+            $('#form-name').addClass('is-invalid');
+            empty = true;
+        } else {
+            $('#form-name').removeClass('is-invalid');
+        }
+
+        if (email == '') {
+            $('#form-email').addClass('is-invalid');
+            empty = true;
+        } else {
+            $('#form-email').removeClass('is-invalid');
+        }
+
+        if (description == '') {
+            $('#form-description').addClass('is-invalid');
+            empty = true;
+        } else {
+            $('#form-description').removeClass('is-invalid');
+        }
+
+        // Если есть пустые поля
+        if (empty) {
+            // Если можно добавлять сообщения
+            if (addMessages) {
+                // Добавить блок "заполните поля"
+                $('#verification-messages').append(
+                    '<div class="alert alert-danger" role="alert">Заполните поля!</div>');
+            }
+            // Форма не валидна
+            result = false;
+        }
+
+        // Если имейл валиден
+        if (checkEmail(email)) {
+            // Убрать красную обводку вокруг поля
+            $('#form-email').removeClass('is-invalid');           
+        } else {
+            // Добавить красную обводку вокруг поля
+            $('#form-email').addClass('is-invalid');
+            // Если можно добавлять сообщения
+            if (addMessages) {
+                // Добавить блок "неверный e-mail"
+                $('#verification-messages').append(
+                    '<div class="alert alert-danger" role="alert">Неверный email</div>');
+            }
+            // Форма не валидна
+            result = false;
+        }
+
+        // Если файлы загружались через форму
+        if (document.getElementById('form-image').files[0] != null) {
+            // Получить имя файла
+            var fileName = document.getElementById('form-image').files[0].name;
+            // Проверить формат файла
+            var reg = /\.(png|gif|jpe?g)$/i;
+            // Если имя файла прошло проверку 
+            if (reg.test(fileName)) {
+                // Убрать красную обводку вокруг поля
+                $('#form-image').removeClass('is-invalid');
+            } else {
+                // Если можно добавлять сообщения
+                if (addMessages) {
+                    // Добавить блок "неверный формат"
+                    $('#verification-messages').append(
+                        '<div class="alert alert-danger" role="alert">' + 
+                        'Неверный формат изображения. Допустимые форматы: JPG/GIF/PNG</div>');
+                }
+                // Добавить красную обводку вокруг поля
+                $('#form-image').addClass('is-invalid');
+                // Форма не валидна
+                result = false;
+            }
+        } else {
+            // Если можно добавлять сообщения
+            if (addMessages) {
+                // Добавить блок "Изображение не было загружено"
+                $('#verification-messages').append(
+                    '<div class="alert alert-danger" role="alert">' + 
+                    'Изображение не было загружено</div>');
+            }
+            // Добавить красную обводку вокруг поля
             $('#form-image').addClass('is-invalid');
-            break;
-        // Пустые поля формы
-        case '0':
-            // Что-то не так, проверяем валидность формы
-            checkCreateForm();
-            break;
-        // Все данные валидны
-        case '1':
-            // Убрать блок "неверный формат"
-            $('#check-format').addClass('sr-only');
-            // Убрать красную обводку у поля загрузки файла
-            $('#form-image').removeClass('is-invalid');
-            break;
-        default:
-            break;
+            // Форма не валидна
+            result = false;
+        }
+
+        // Вернуть успешность проверки валидации
+        return result;
+    }
+
+    // Проверить валидность email-а
+    function checkEmail(email) {
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // При нажатии на кнопку "предварительный просмотр"
     $('#preview-click').click(function() {
+        // Удалить все сообщения
+        $('#verification-messages').empty();
         // Проверить валидность заполненных данных
         var valid = checkCreateForm();
-        if (!valid) {
-            // Если данные не валидны
-            // Скрыть форму
-            $('#preview').addClass('sr-only');
-        } else {
-            // Иначе
+        // Если данные валидны
+        if (valid) {
             // Показать форму
             $('#preview').removeClass('sr-only');
+            
+        } else {
+            // Иначе - скрыть
+            $('#preview').addClass('sr-only');
         }
     });
 
@@ -86,83 +186,6 @@ $( document ).ready(function() {
         var formName = $(this).attr('id').split(/\-/)[1];
         $('#preview-' + formName).html($(this).val());
     });
-
-    // Проверить валидность формы
-    function checkCreateForm() {
-        // Данные из формы
-        var name = $('#form-name').val();
-        var email = $('#form-email').val();
-        var description = $('#form-description').val();
-        var image = $('#form-image').val();
-        // Флаг валидности формы
-        var valid = true;
-        
-        // Проверяем, являются ли текстовые поля пустыми 
-        // Если да - обводим их красным контуром (форма не валидна),
-        // Иначе - убираем красный контур
-        if (name == '') {
-            $('#form-name').addClass('is-invalid');
-            valid = false;
-        } else {
-            $('#form-name').removeClass('is-invalid');
-        }
-
-        if (email == '') {
-            $('#form-email').addClass('is-invalid');
-            valid = false;
-        } else {
-            $('#form-email').removeClass('is-invalid');
-        }
-
-        if (description == '') {
-            $('#form-description').addClass('is-invalid');
-            valid = false;
-        } else {
-            $('#form-description').removeClass('is-invalid');
-        }
-
-        // Если файлы загружались через форму
-        if (document.getElementById('form-image').files[0] != null) {
-            // Получить имя файла
-            var fileName = document.getElementById('form-image').files[0].name;
-            // Проверить формат файла
-            var reg = /\.(png|gif|jpe?g)$/i;
-            // Проверить формат файла
-            if (reg.test(fileName)) {
-                // Если имя файла прошло проверку
-                // Скрыть блок "неверный формат"
-                $('#check-format').addClass('sr-only');
-                // Убрать красную обводку вокруг поля
-                $('#form-image').removeClass('is-invalid');
-            } else {
-                // Плказать блок "неверный формат"
-                $('#check-format').removeClass('sr-only');
-                // Добавить красную обводку вокруг поля
-                $('#form-image').addClass('is-invalid');
-                // Форма не валидна
-                valid = false;
-            }
-        } else {
-            // Добавить красную обводку вокруг поля
-            $('#form-image').addClass('is-invalid');
-            // Форма не валидна
-            valid = false;
-        }
-
-        // Если форма валидна
-        if (valid) {
-            // Скрыть сообщение об ошибке
-            $('#check-field').addClass('sr-only');
-            // Показать сообщение об успехе
-            $('.alert-success').removeClass('sr-only');
-        } else {
-            $('#check-field').removeClass('sr-only');
-            $('.alert-success').addClass('sr-only');
-        }
-
-        // Вернуть успешность прохождения проверки валидации
-        return valid;
-    }
 
     // Предосмотр картинки
     $('#form-image').change(function(){

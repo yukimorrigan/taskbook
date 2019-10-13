@@ -39,28 +39,30 @@ class TaskController
      * Action для страницы "Добавить задачу"
      */
     public function actionCreate() {
-        // Инифиализация переменных
-        $check = '';
+        // Инициализация переменных
         $name = '';
         $email = '';
         $description = '';
         // Обработка формы
         // Если форма отправлена
         if (isset($_POST['submit'])) {
+            // Флаг ошибок
+            $errors = false;
+            // Флаг результатов
+            $result = false;
             // Получаем данные из формы
             $name = $_POST['name'];
             $email = $_POST['email'];
             $description = $_POST['description'];
             // Если хоть одно текстовое поле формы пустое
             if ($name == '' || $email == '' || $description == '') {
-                // Данные не прошли проверку
-                $check = 0;
-                // Подключаем вид
-                require_once(ROOT . '/views/task/create.php');
-                // Возврат из метода
-                return true;
+                $errors[] = 'Заполните поля!';
             }
-            // Если пользователь заполнил все текстовые поля
+            // Если E-mail не валидный
+            if (!Task::checkEmail($email)) {
+                $errors[] = 'Неверный email';
+            }
+            
             // Получаем id, который будет иметь запись, после вставки в БД
             $id = Task::getAutoIncrement();
             // Получаем изображение из формы
@@ -69,35 +71,35 @@ class TaskController
             $check_format = true;
             // Проверяем, загружалось ли изображение через форму 
             if (is_uploaded_file($fileName) && $check_format = Task::checkImageFormat($fileName)) {
-                // Если да
-                // Добавляем новую задачу в БД
-                Task::createTask($name, $email, $description);
-                // Сохраняем изображение
-                // Максимально допустимая ширина изображения
-                $max_width = 320;
-                // Максимально допустимая высота изображения
-                $max_height = 240;
-                // Ширина и высота загруженного изображения
-                list($width, $height) = getimagesize($fileName);
-                // Если изображение привышает максимальные размеры
-                if ($width > $max_width || $height > $max_height) {
-                    // Пропорционально уменьшаем изображение
-                    Task::changeImageSize($fileName, $max_width, $max_height, $width, $height);
+                // Если не было ошибок
+                if ($errors == false) {
+                    // Добавляем новую задачу в БД
+                    Task::createTask($name, $email, $description);
+                        // Сохраняем изображение
+                        // Максимально допустимая ширина изображения
+                    $max_width = 320;
+                        // Максимально допустимая высота изображения
+                    $max_height = 240;
+                        // Ширина и высота загруженного изображения
+                    list($width, $height) = getimagesize($fileName);
+                        // Если изображение привышает максимальные размеры
+                    if ($width > $max_width || $height > $max_height) {
+                            // Пропорционально уменьшаем изображение
+                        Task::changeImageSize($fileName, $max_width, $max_height, $width, $height);
+                    }
+                        // Формат загруженного изображения
+                    $format = preg_split('/\./', $_FILES["image"]["name"])[1];
+                        // Сохраняем изображение
+                    move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "/upload/images/{$id}." . $format);
+                        // Запись удачно добавлена
+                    $result = true;
                 }
-                // Формат загруженного изображения
-                $format = preg_split('/\./', $_FILES["image"]["name"])[1];
-                // Сохраняем изображение
-                move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "/upload/images/{$id}." . $format);
-                // Данные прошли проверку
-                $check = 1;
             } else {
                 // Данные не прошли проверку
                 if ($check_format) { 
-                    // Изображение не было загружено
-                    $check = 0;
+                    $errors[] = 'Изображение не было загружено';
                 } else {
-                    // Неверный формат изображения
-                    $check = -1;
+                    $errors[] = 'Неверный формат изображения. Допустимые форматы: JPG/GIF/PNG';
                 }
             }
             

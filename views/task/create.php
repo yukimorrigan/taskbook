@@ -5,26 +5,24 @@
         <div class="col">
             <!-- Уведомления -->
             <div class="row">
-            	<div class="col-lg-3"></div>
-	            <div class="col">
-			        <div id="check-field" class="alert alert-danger sr-only" role="alert">
-						Заполните поля!
-					</div>
-					<div id="check-format" class="alert alert-danger sr-only" role="alert">
-						Неверный формат файла. Допустимые форматы: JPG, GIF, PNG
-					</div>
-					<p id="check" class="sr-only"><?php echo $check; ?></p>
-					<?php if ($check == 1): ?>
-						<div class="alert alert-success" role="alert">
-							Ваша задача добавлена в список задач!
-						</div>
-					<?php endif; ?>
-				</div>
-				<div class="col-lg-3"></div>
-			</div>
-			<!-- Форма -->
+                <div class="col-lg-3"></div>
+                <div id="verification-messages" class="col">
+                    <?php if (isset($errors) && is_array($errors)): ?>
+                        <?php foreach ($errors as $error): ?>
+                            <div class="alert alert-danger" role="alert"><?php echo $error; ?></div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                    <?php if (isset($result) && $result): ?>
+                        <div class="alert alert-success" role="alert">
+                            Ваша задача добавлена в список задач!
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+            <!-- Форма -->
             <form id="create-task" action="#" method="post" enctype="multipart/form-data">
-            	<!-- Имя -->
+                <!-- Имя -->
                 <div class="form-group row">
                     <div class="col-lg-3"></div>
                     <label class="col-lg-1 col-form-label">Ваше имя*</label>

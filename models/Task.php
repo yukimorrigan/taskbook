@@ -127,9 +127,23 @@ class Task
     }
 
     /**
+     * Проверяет email
+     * @param string $email <p>E-mail</p>
+     * @return boolean <p>Результат выполнения метода</p>
+     */
+    public static function checkEmail($email)
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Проверяет формат изображения
      * @param string $fileName <p>Путь к файлу</p>
-     * @return boolean <p>Результат проверки</p>
+     * @return boolean <p>Результат выполнения метода</p>
      */
     public static function checkImageFormat($fileName) {
         // Получить формат изображения
