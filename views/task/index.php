@@ -8,17 +8,17 @@
                 <tr>
                     <th>Имя</th>
                     <th>E-mail</th>
-                    <th>Текст задачи</th>
                     <th>Статус</th>
+                    <th>Текст задачи</th>
                 </tr>
                 <?php foreach ($tasks as $task): ?>
                     <tr>
                         <td><?php echo $task['name']; ?></td>
                         <td class="text-break"><?php echo $task['email']; ?></td>
+                        <td><?php echo Task::getStatus($task['status']); ?></td>
                         <td class="description" data-toggle="modal" data-target="#descriptionModal" data-whatever="<?php echo $task['id']; ?>">
                             <?php echo Task::getShortDescription($task['description']); ?>
                         </td>
-                        <td><?php echo Task::getStatus($task['status']); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </table>
