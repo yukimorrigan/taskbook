@@ -20,6 +20,7 @@ class TaskController
         require_once(ROOT . '/views/task/index.php');
         return true;
     }
+
     /**
      * Action для получения информации о задаче при помощи асинхронного запроса (ajax)
      * @param integer $id <p>id задачи</p>
@@ -34,62 +35,72 @@ class TaskController
         return true;
     }
 
+    /**
+     * Action для страницы "Добавить задачу"
+     */
     public function actionCreate() {
+        // Инифиализация переменных
         $check = '';
         $name = '';
         $email = '';
         $description = '';
-
+        // Обработка формы
+        // Если форма отправлена
         if (isset($_POST['submit'])) {
+            // Получаем данные из формы
             $name = $_POST['name'];
             $email = $_POST['email'];
             $description = $_POST['description'];
-
+            // Если хоть одно текстовое поле формы пустое
             if ($name == '' || $email == '' || $description == '') {
+                // Данные не прошли проверку
                 $check = 0;
+                // Подключаем вид
+                require_once(ROOT . '/views/task/create.php');
+                return true;
+            }
+            // Если пользователь заполнил все текстовые поля
+            // Получаем id, который будет иметь запись, после вставки в БД
+            $id = Task::getAutoIncrement();
+            // Получаем изображение из формы
+            $fileName = $_FILES['image']['tmp_name'];
+            $check_format = 1;
+            // Проверяем, загружалось ли изображение через форму 
+            if (is_uploaded_file($fileName) && $check_format = Task::checkImageFormat($fileName)) {
+                // Если да
+                // Добавляем новую задачу в БД
+                Task::createTask($name, $email, $description);
+                // Сохраняем изображение
+                // Максимально допустимая ширина изображения
+                $max_width = 320;
+                // Максимально допустимая высота изображения
+                $max_height = 240;
+                // Ширина и высота загруженного изображения
+                list($width, $height) = getimagesize($fileName);
+                // Если изображение привышает максимальные размеры
+                if ($width > $max_width || $height > $max_height) {
+                    // Пропорционально уменьшаем изображение
+                    Task::changeImageSize($fileName, $max_width, $max_height, $width, $height);
+                }
+                // Формат загруженного изображения
+                $format = preg_split('/\./', $_FILES["image"]["name"])[1];
+                // Сохраняем изображение
+                move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "/upload/images/{$id}." . $format);
+                // Данные прошли проверку
+                $check = 1;
             } else {
-                $id = Task::createTask($name, $email, $description);
-                if ($id) {
-                    $fileName = $_FILES['image']['tmp_name'];
-                    if (is_uploaded_file($fileName)) {
-                        $new_width = 320;
-                        $new_height = 240;
-                        list($width, $height) = getimagesize($fileName);
-                        if ($width > $new_width || $height > $new_height) {
-                            $this->changeImageSize($fileName, $new_width, $new_height);
-                        }
-                        $format = preg_split('/\./', $_FILES["image"]["name"])[1];
-                        move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "/upload/images/{$id}." . $format);
-                        $check = 1;
-                    }
+                // Данные не прошли проверку
+                if ($check_format) { 
+                    $check = 0;
+                } else {
+                    $check = -1;
                 }
             }
+            
         }
         // Подключаем вид
         require_once(ROOT . '/views/task/create.php');
         return true;
-    }
-
-    public function changeImageSize($fileName, $new_width, $new_height) {
-        $fn = $fileName;
-        $size = getimagesize($fn);
-        $ratio = $size[0]/$size[1]; // width/height
-
-        if( $ratio >= 1) {
-            $width = $new_width;
-            $height = $new_width/$ratio;
-        }
-        else {
-            $width = $new_height*$ratio;
-            $height = $new_height;
-        }
-        $src = imagecreatefromstring(file_get_contents($fn));
-        $dst = imagecreatetruecolor($width,$height);
-        $image = imagecopyresampled($dst,$src,0,0,0,0,$width,$height,$size[0],$size[1]);
-
-        imagedestroy($src);
-        imagepng($dst,$fileName);
-        imagedestroy($dst);
     }
 }
 
