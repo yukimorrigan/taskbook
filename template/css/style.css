@@ -8,8 +8,12 @@ html, body {
     }
 }
 
-.description, #preview-click, input[type=file] {
+.description, #preview-click, input[type=file], .sort {
     cursor: pointer;
+}
+
+.sort a:hover {
+	text-decoration: none;
 }
 
 .preview-img {
