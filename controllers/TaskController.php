@@ -4,7 +4,8 @@
  * Задача
  */
 class TaskController 
-{   /**
+{
+    /**
      * Action для страницы просмотра списка задач
      * @param integer $page <p>страница просмотра</p>
      */
@@ -17,7 +18,7 @@ class TaskController
         // Создаем объект Pagination - постраничная навигация
         $pagination = new Pagination($total, $page, Task::SHOW_BY_DEFAULT, 'page-');
         // Подключаем вид
-        require_once(ROOT . '/views/task/index.php');
+        require_once(ROOT . '/views/task/view.php');
         return true;
     }
 
