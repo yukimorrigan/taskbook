@@ -58,7 +58,7 @@
                             <div class="row">
                                 <!-- Картинка -->
                                 <div class="col-lg-4">
-                                    <img src="/upload/images/no-image.png" class="img-fluid" alt="Изображение к тексту задачи">
+                                    <img id="task-img" src="/upload/images/no-image.png" class="img-fluid" alt="Изображение к тексту задачи">
                                 </div>
                                 <!-- Поля для редактирования -->
                                 <div class="col-lg-8">

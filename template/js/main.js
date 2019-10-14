@@ -32,10 +32,10 @@ $( document ).ready(function() {
         // Асинхронный запрос - Получить информацию о задаче по id
         $.post('/task/getTask/' + id, {}, function (data) {
             var task = JSON.parse(data);
-            $('.modal-body #view-name').html(task['name']);
-            $('.modal-body #view-email').html(task['email']);
-            $('.modal-body #description').html(task['description']);
-            $('.modal-body img').attr('src', task['image']);
+            $('#view-name').html(task['name']);
+            $('#view-email').html(task['email']);
+            $('#description').html(task['description']);
+            $('#task-img').attr('src', task['image']);
             $('#admin-task-id').html(task['id']);
             $('#admin-task-description').val(task['description']);
             $('#admin-task-status').val(task['status']);
