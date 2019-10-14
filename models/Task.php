@@ -6,7 +6,7 @@
 class Task 
 {
     // Количество отображаемых задач по умолчанию
-    const SHOW_BY_DEFAULT = 8;
+    const SHOW_BY_DEFAULT = 9;
 
     /**
      * Возвращает список задач
@@ -19,7 +19,26 @@ class Task
         // Смещение (для запроса)
         $offset = ($page - 1) * self::SHOW_BY_DEFAULT;
         // Запрос
-        return R::getAll('SELECT * FROM `task` LIMIT ? OFFSET ?', 
+        return R::findAll('task', ' LIMIT ? OFFSET ?', 
+            array(self::SHOW_BY_DEFAULT, $offset));
+    }
+
+    /**
+     * Возвращает отсортированный список задач
+     * @param string $sortColumn <p>Столбец, по которому производится сортировка</p>
+     * @param string $sortOrder <p>Порядок сортировки</p>
+     * @param type $page [optional] <p>Номер страницы</p>
+     * @return type <p>Массив с задачами</p>
+     */    
+    public static function getSortTasksList($sortColumn = 'status', $sortOrder = 'ASC', $page = 1)
+    {
+        $page = intval($page);
+        // Параметры сортировки
+        $partOfQuery = sprintf(' ORDER BY %s %s ', $sortColumn, $sortOrder);
+        // Смещение (для запроса)
+        $offset = ($page - 1) * self::SHOW_BY_DEFAULT;
+        // Запрос
+        return R::findAll('task', $partOfQuery . ' LIMIT ? OFFSET ?', 
             array(self::SHOW_BY_DEFAULT, $offset));
     }
 
@@ -56,6 +75,27 @@ class Task
         $task->email = $email;
         $task->description = $description;
         $task->status = 0;
+        // Сохраняем в таблице
+        $id = R::store($task);
+        // Вернуть результат операции
+        return $id;
+    }
+
+    /**
+     * Редактирует задачу с заданным id
+     * @param integer $id <p>id задачи</p>
+     * @param array $options <p>Массив с информацей о задаче</p>
+     * @return boolean <p>Результат выполнения метода</p>
+     */
+    public static function updateTask($id, $options) {
+        $id = intval($id);
+        // Находим объект task по id
+        $task = R::load('task', $id);
+        // Изменяем его поля
+        $task->name = $options['name'];
+        $task->email = $options['email'];
+        $task->description = $options['description'];
+        $task->status = (int) $options['status'];
         // Сохраняем в таблице
         $id = R::store($task);
         // Вернуть результат операции
