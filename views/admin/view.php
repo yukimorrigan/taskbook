@@ -57,11 +57,11 @@
                             <h6 id="user" class="pb-3"><span id="view-name"></span>, <span id="view-email" class="text-break"></span></h6>
                             <div class="row">
                                 <!-- Картинка -->
-                                <div class="col-lg-4">
+                                <div class="col-lg-auto mb-3">
                                     <img id="task-img" src="/upload/images/no-image.png" class="img-fluid" alt="Изображение к тексту задачи">
                                 </div>
                                 <!-- Поля для редактирования -->
-                                <div class="col-lg-8">
+                                <div class="col-lg">
                                     <!-- Текст задачи -->
                                     <div class="form-group">
                                         <label>Текст задачи</label>
