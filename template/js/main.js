@@ -15,15 +15,16 @@ $( document ).ready(function() {
     /* Определить активную страницу */
     if (window.location.href.indexOf('task/create') > -1) {
         $('#create_menu_item').addClass('active');
-    } else if (window.location.href.indexOf('login') > -1) {
+    } else if (window.location.href.indexOf('admin') > -1) {
         $('#login_menu_item').addClass('active');
     } else {
         $('#list_menu_item').addClass('active');
     }
 
-    /* Отображение страницы 'Список задач' */
-    // Отображение модального окна 'Текст задачи'
+    /* Отображение модального окна 'Текст задачи' */
     $('#descriptionModal').on('show.bs.modal', function (event) {
+        // Скрыть уведомления
+        $('.modal-body .alert').addClass('sr-only');
         // Кнопка, на которую нажал пользователь
         var button = $(event.relatedTarget);
         // Информация, записанная в data-whatever
@@ -31,9 +32,13 @@ $( document ).ready(function() {
         // Асинхронный запрос - Получить информацию о задаче по id
         $.post('/task/getTask/' + id, {}, function (data) {
             var task = JSON.parse(data);
-            $('.modal-body #user').html(task['name'] + ', ' + task['email']);
+            $('.modal-body #view-name').html(task['name']);
+            $('.modal-body #view-email').html(task['email']);
             $('.modal-body #description').html(task['description']);
             $('.modal-body img').attr('src', task['image']);
+            $('#admin-task-id').html(task['id']);
+            $('#admin-task-description').val(task['description']);
+            $('#admin-task-status').val(task['status']);
         });
     });
 
@@ -198,4 +203,80 @@ $( document ).ready(function() {
         // Показать картинку
         readURL(this, '.preview-img');
     });
+
+    /* Редактирование задач для админа */
+    $('#save-changes').click(function(){
+        // id задачи
+        var id = $('#admin-task-id').text();
+        // поля задачи
+        options = {};
+        options['name'] = $('#view-name').text();
+        options['email'] = $('#view-email').text();
+        options['description'] = $('#admin-task-description').val();
+        options['status'] = $('#admin-task-status').val();
+        // парсим в строку JSON
+        options = JSON.stringify(options);
+        // асинхронный запрос
+        $.post('/admin/edit/' + id + '/' + options, {}, function (response) {
+            // если результат выполнения операции успешен
+            if (response) {
+                // Показать уведомления
+                $('.modal-body .alert').removeClass('sr-only');
+                // Обновить поле в таблице
+                $.post('/task/getTask/' + id, {}, function (data) {
+                    // парсим из JSON в массив
+                    var task = JSON.parse(data);
+                    // находим строку таблицы с data-whatever=id
+                    var descField = $('[data-whatever="' + id + '"]');
+                    // заменяем описание в строке таблицы
+                    descField.text(getShort(task['description']));
+                    // заменяем статус в строке таблицы
+                    if (task['status'] == '1') {
+                        descField.siblings('#status-table').text('Выполнена');
+                    } else {
+                        descField.siblings('#status-table').text('Не выполнена');
+                    }
+                });
+            }
+        });
+    });
+
+    /* Получить первые 100 символов */
+    function getShort(text) {
+        if (text.length > 100) {
+            return text.substr(0, 100) + '...';
+        } else {
+            return text.substr(0, 100);
+        }
+    }
+
+    /* Сортировка на странице админа */
+    if (window.location.href.indexOf('admin') > -1) {
+        try {
+            // Если в поисковое строке есть страница - достаем ее
+            $page = window.location.href.match('page-([0-9]+)')[1];
+        } catch (err) {
+            // Иначе - страница будет первой
+            $page = 1;
+        }
+        // Для каждого заголовка столбца, что отвечает за сортировку
+        $('.sort a').each(function() {
+            // Заменяем страницу в ссылке на текущую страницу
+            var link = $(this).attr('href').replace(/[0-9]+/, $page);
+            $(this).attr('href', link);
+            // Переключаем порядок сортировки
+            if ($(this).hasClass('ASC')){
+                // Если выбрана сортировка по возрастанию
+                // Заменяем порядок сортировки в ссылке на сортировку по убыванию
+                var link = $(this).attr('href').replace(/ASC/, 'DESC');
+                $(this).attr('href', link);
+            } else {
+                // Если выбрана сортировка по убыванию
+                // Заменяем порядок сортировки в ссылке на сортировку по возрастанию
+                var link = $(this).attr('href').replace(/DESC/, 'ASC');
+                $(this).attr('href', link);
+            }
+        });
+
+    }
 });
