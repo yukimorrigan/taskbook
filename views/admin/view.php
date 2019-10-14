@@ -13,7 +13,7 @@
                     </th>
                     <th id="sort-email" class="sort">
                         <a href="/admin/view/email/ASC/page-1" class="<?php if(isset($sortOrder) && $sortColumn == 'email') echo $sortOrder; ?>">
-                            E-mail <i class="fas fa-filter"></i>
+                            Почта <i class="fas fa-filter"></i>
                         </a>
                     </th>
                     <th id="sort-description" class="sort">

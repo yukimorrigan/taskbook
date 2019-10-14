@@ -7,7 +7,7 @@
             <table class="table-bordered table-striped table">
                 <tr>
                     <th>Имя</th>
-                    <th>E-mail</th>
+                    <th>Почта</th>
                     <th>Статус</th>
                     <th>Текст задачи</th>
                 </tr>
