@@ -3,7 +3,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-        	<!-- Список задач -->
+            <!-- Список задач -->
             <table class="table-bordered table-striped table">
                 <tr>
                     <th>Имя</th>
@@ -35,12 +35,12 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <h6 id="user" class="pb-3"></h6>
+                            <h6 id="user" class="pb-3"><span id="view-name"></span>, <span id="view-email"></span></h6>
                             <div class="row">
-                                <div class="col-4">
+                                <div class="col-lg-4">
                                     <img src="/upload/images/no-image.png" class="img-fluid" alt="Изображение к тексту задачи">
                                 </div>
-                                <div class="col-8">
+                                <div class="col-lg-8">
                                     <p id="description"></p>
                                 </div>
                             </div>
