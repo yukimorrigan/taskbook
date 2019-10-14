@@ -8,15 +8,21 @@ html, body {
     }
 }
 
+@media (min-width: 576px) {
+    #login-container, #login-container .row {
+        height: calc(100% - 112px);
+    }
+}
+
 .description, #preview-click, input[type=file], .sort {
     cursor: pointer;
 }
 
 .sort a:hover {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 .preview-img {
-	max-width: 320px;
-	max-height: 240px;
+    max-width: 320px;
+    max-height: 240px;
 }

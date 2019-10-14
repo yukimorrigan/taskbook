@@ -54,7 +54,7 @@
                             <!-- ID -->
                             <p id="admin-task-id" class="sr-only"></p>
                             <!-- Имя, Email -->
-                            <h6 id="user" class="pb-3"><span id="view-name"></span>, <span id="view-email"></span></h6>
+                            <h6 id="user" class="pb-3"><span id="view-name"></span>, <span id="view-email" class="text-break"></span></h6>
                             <div class="row">
                                 <!-- Картинка -->
                                 <div class="col-lg-4">

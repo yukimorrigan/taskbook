@@ -1,12 +1,16 @@
 <?php include ROOT . '/views/layouts/header.php' ?>
 
-<div class="container-fluid">
-    <div class="row">
+<div id="login-container" class="container-fluid">
+    <div class="row align-items-center">
         <div class="col">
-        	<!-- Уведомления -->
+        	
+            <div class="row">
+                <div class="col"><h3 class="text-center mb-5">Авторизация</h3></div>
+            </div>
+            <!-- Уведомления -->
             <div class="row">
                 <div class="col-lg-3"></div>
-                <div id="verification-messages" class="col">
+                <div class="col">
                     <?php if (isset($error)): ?>
                         <div class="alert alert-danger" role="alert"><?php echo $error; ?></div>
                     <?php endif; ?>
