@@ -21,8 +21,8 @@
             <li class="nav-item">
                 <a id="create_menu_item" class="nav-link" href="/task/create">Создать задачу <i class="fas fa-plus"></i></a>
             </li>
-            <li class="login_menu_item">
-                <a id="" class="nav-link" href="#">Вход для админа <i class="fas fa-sign-in-alt"></i></a>
+            <li>
+                <a id="login_menu_item" class="nav-link" href="/admin/view">Вход для админа <i class="fas fa-sign-in-alt"></i></a>
             </li>
         </ul>
     </nav>
